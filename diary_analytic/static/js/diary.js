@@ -188,7 +188,15 @@ function sortByPercent(direction) {
   blocks.sort((a, b) => {
     const aVal = getPercentValue(a);
     const bVal = getPercentValue(b);
-    return direction === 1 ? bVal - aVal : aVal - bVal;
+
+    const aIsPos = /pos/i.test(a.querySelector('.param-title')?.textContent || '');
+    const bIsPos = /pos/i.test(b.querySelector('.param-title')?.textContent || '');
+
+    // Для pos-параметров инвертируем сортировку
+    const aSortVal = aIsPos ? -aVal : aVal;
+    const bSortVal = bIsPos ? -bVal : bVal;
+
+    return direction === 1 ? bSortVal - aSortVal : aSortVal - bSortVal;
   });
 
   const container = document.querySelector('.parameters-list');
