@@ -165,6 +165,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // --- Фокус ---
   setupFocusToggleBtn();
+  setupPercentToggleBtn(); // <-- добавлено
 
   // --- Сортировка по сумме ---
   const sortBtnSum = document.querySelector('.sort-btn[data-sort="sum"]');
@@ -512,6 +513,10 @@ async function loadParameterHistory(paramKey, dateStr) {
   const emptyDiv = document.getElementById(emptyId);
   if (!ctx) return;
 
+  // Проверяем, видим ли родительский блок параметра
+  const paramBlock = ctx.closest('.parameter-block');
+  if (paramBlock && paramBlock.style.display === 'none') return;
+
   // Удаляем старый график, если есть
   if (ctx._chartInstance) {
     ctx._chartInstance.destroy();
@@ -647,6 +652,7 @@ async function loadParameterHistory(paramKey, dateStr) {
 // --- Инициализация графиков для всех параметров ---
 function initAllParameterCharts(dateStr) {
   document.querySelectorAll('.parameter-block').forEach(block => {
+    if (block.style.display === 'none') return; // Только для видимых
     const paramKey = block.getAttribute('data-key');
     loadParameterHistory(paramKey, dateStr);
   });
@@ -766,6 +772,7 @@ function setupParamFilterInput() {
   input.addEventListener('input', function() {
     filterParameterBlocks(this.value);
     saveParamFilterState(this.value);
+    updateParameterSums(); // Пересчитать суммы и проценты для новых видимых
   });
   // --- Кнопка очистки фильтра ---
   const clearBtn = document.querySelector('.filter-clear-btn');
@@ -775,6 +782,7 @@ function setupParamFilterInput() {
       filterParameterBlocks('');
       saveParamFilterState('');
       input.focus();
+      updateParameterSums(); // Пересчитать после очистки фильтра
     });
   }
 }
@@ -878,12 +886,14 @@ async function fillChartsMinDateInput(selectedDate) {
 
 // --- Сумма значений параметра с выбранной даты ---
 async function updateParameterSums() {
+  if (!percentBlocksVisible) return; // Останавливаем расчёт, если проценты скрыты
   const minDateInput = document.getElementById('charts-min-date');
   const dateInput = document.getElementById('date-input');
   const minDate = minDateInput ? minDateInput.value : '';
   const toDate = dateInput ? dateInput.value : '';
 
   document.querySelectorAll('.parameter-block').forEach(async (block) => {
+    if (block.style.display === 'none') return; // Только для видимых
     const paramKey = block.getAttribute('data-key');
     const sumBlock = block.querySelector('.param-sum-block');
     const sumBlockRange = block.querySelector('.param-sum-block-range');
@@ -1219,3 +1229,90 @@ function setupFocusToggleBtn() {
   // Восстановить состояние при загрузке
   setFocusMode(loadFocusModeState());
 }
+
+function savePercentVisibleState(visible) {
+  localStorage.setItem('diary_percent_visible', visible ? '1' : '0');
+}
+
+function loadPercentVisibleState() {
+  const val = localStorage.getItem('diary_percent_visible');
+  if (val === null) return true; // по умолчанию проценты включены
+  return val === '1';
+}
+
+function setPercentBlocksVisible(visible) {
+  percentBlocksVisible = visible;
+  document.querySelectorAll('.param-sum-block-range').forEach(block => {
+    block.style.display = visible ? '' : 'none';
+  });
+  const percentBtn = document.getElementById('toggle-percent-btn');
+  if (percentBtn) percentBtn.classList.toggle('active', visible);
+  if (!visible) {
+    document.querySelectorAll('.param-sum-block-range').forEach(block => {
+      block.textContent = '';
+      block.style.background = '';
+      block.style.borderColor = '';
+    });
+  } else {
+    updateParameterSums();
+  }
+}
+
+function setupPercentToggleBtn() {
+  const percentBtn = document.getElementById('toggle-percent-btn');
+  if (!percentBtn) return;
+  percentBtn.addEventListener('click', function() {
+    const nowVisible = !loadPercentVisibleState();
+    setPercentBlocksVisible(nowVisible);
+    savePercentVisibleState(nowVisible);
+  });
+  // Восстановить состояние при загрузке
+  setPercentBlocksVisible(loadPercentVisibleState());
+}
+
+let percentBlocksVisible = true;
+
+// Обработчик для кнопки "%"
+document.addEventListener('DOMContentLoaded', function() {
+  // const percentBtn = document.getElementById('toggle-percent-btn'); // Удалено, так как теперь в setupPercentToggleBtn
+  // if (percentBtn) {
+  //   percentBtn.addEventListener('click', function() {
+  //     percentBlocksVisible = !percentBlocksVisible;
+  //     document.querySelectorAll('.param-sum-block-range').forEach(block => {
+  //       block.style.display = percentBlocksVisible ? '' : 'none';
+  //     });
+  //     // Если скрываем проценты — сразу очистить их значения
+  //     if (!percentBlocksVisible) {
+  //       document.querySelectorAll('.param-sum-block-range').forEach(block => {
+  //         block.textContent = '';
+  //         block.style.background = '';
+  //         block.style.borderColor = '';
+  //       });
+  //     } else {
+  //       updateParameterSums(); // если показываем — пересчитать
+  //     }
+  //   });
+  // }
+});
+
+// Добавить/изменить стили для кнопки %
+const percentBtnStyle = document.createElement('style');
+percentBtnStyle.innerHTML = `
+  #toggle-percent-btn.active {
+    background: #e0a800 !important;
+    color: #222 !important;
+    border: none !important;
+  }
+  #toggle-percent-btn {
+    background: #eee;
+    color: #888;
+    border: none;
+    border-radius: 8px;
+    padding: 0 14px;
+    height: 32px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+`;
+document.head.appendChild(percentBtnStyle);
