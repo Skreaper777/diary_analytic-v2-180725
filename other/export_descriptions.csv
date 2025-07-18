@@ -93,7 +93,7 @@ rbt_pskh_nrv_razmerennaia_i_spokoinaia_realnaia_rabota_end_pos_p2,РБТ-ПСХ-
 rbt_pskh_trv_rabota_vyzyvaet_sonlivost_one_p4,РБТ-ПСХ-ТРВ :: Работа вызывает сонливость :: {one} p4,
 rbt_pskh_trv_zhelanie_sbezhat_ot_realnykh_trudnostei_all_p4,РБТ-ПСХ-ТРВ 💼 :: Желание сбежать от реальных трудностей 🏃‍♂️👻 :: {all} p4,
 rbt_pskh_trv_preodolel_zhelanie_sbezhat_ot_realnykh_trudnostei_end_p4_pos,РБТ-ПСХ-ТРВ 💼 :: Преодолел желание сбежать от реальных трудностей :: {end} p4 pos},
-rbt_pskh_trv_prokrastinatsiia_all_def0_p4,РБТ-ПСХ-ТРВ 💼 :: Прокрастинация 😵⏳ :: {all} def0 p4,
+rbt_pskh_trv_prokrastinatsiia_all_p4,РБТ-ПСХ-ТРВ 💼 :: Прокрастинация 😵⏳ :: {all} p4,
 rbt_pskh_trv_sbezhal_ot_problem_v_realnoi_aktivnosti_end_p4,РБТ-ПСХ-ТРВ 💼 :: Сбежал от проблем в реальной активности 😱 :: {end} p4,
 rbt_pskh_trv_strakh_raboty_end_p2,РБТ-ПСХ-ТРВ 🧘‍♂️ :: Страх работы 😱 :: {end} p2,
 rbt_pskh_enr_motivatsiia_i_zhelanie_na_realnuiu_rabotu_all_p0_pos,РБТ-ПСХ-ЭНР 💼 :: Мотивация и желание на реальную работу 🔥 :: {all} p0 pos,31.05 Растет
