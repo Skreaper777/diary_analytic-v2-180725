@@ -35,7 +35,7 @@ obshch_pskh_enr_lebido_end_pos_p2,ОБЩ-ПСХ-ЭНР 🧘‍♂️ :: Леби
 obshch_pskh_enr_nastroenie_end_p0_pos,ОБЩ-ПСХ-ЭНР 🧘‍♂️ :: Настроение 🌞 :: {end} p0 pos,"На удивление, в целом, настроение почти хорошее 😅"
 obshch_pskh_enr_pozitiv_v_zhizni_all_p1_pos,ОБЩ-ПСХ-ЭНР 🧘‍♂️ :: Позитив в жизни 🌞 :: {all} p1 pos,"25.05.25 Не понимаю как, но позитив за 7 дн. 79% 🤔"
 obshch_pskh_enr_npr_obshchee_napriazhenie_all_p0,ОБЩ-ПСХ-ЭНР-НПР 🧘‍♂️ :: Общее напряжение ⚡ :: {all} p0,⚠️⛔️‼️А вот тут очень и очень опасно пока. Надо всеми силами снижать напряжение с себя. 
-obshch_pskh_enr_otd_otdykh_kachestvo_end_pos_p1,ОБЩ-ПСХ-ЭНР-ОТД 👤 :: Отдых (качество) 🏝️ :: {end} pos p1,
+obshch_pskh_enr_otd_otdykh_kachestvo_end_pos_p4,ОБЩ-ПСХ-ЭНР-ОТД 👤 :: Отдых (качество) 🏝️ :: {end} pos p4,
 obshch_pskh_enr_otd_otdykh_kolichestvo_end_pos_p1,ОБЩ-ПСХ-ЭНР-ОТД 👤 :: Отдых (количество) 🏝️ :: {end} pos p1,
 obshch_pskh_enr_otd_tishina_pokoi_odinochestvo_end_pos_p4,"ОБЩ-ПСХ-ЭНР-ОТД 👤 :: Тишина, покой, одиночество 🧘🏻‍♂️ :: {end} pos p4",
 obshch_pskh_enr_otd_khochu_otdykhat_end_p0,ОБЩ-ПСХ-ЭНР-ОТД 👤 :: Хочу отдыхать :: {end} p0,

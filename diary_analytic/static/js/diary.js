@@ -831,8 +831,9 @@ function loadChartsMinDate() {
 function setupChartsMinDateInput() {
   const input = document.getElementById('charts-min-date');
   if (!input) return;
-  // Восстанавливаем выбранную дату из localStorage
-  fillChartsMinDateInput(loadChartsMinDate());
+  // Восстанавливаем значение из localStorage (без сброса)
+  const saved = loadChartsMinDate();
+  if (saved) input.value = saved;
   input.addEventListener('change', function() {
     saveChartsMinDate(this.value);
     initAllParameterCharts(document.getElementById('date-input').value);
