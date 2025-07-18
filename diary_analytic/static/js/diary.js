@@ -650,7 +650,7 @@ function initAllParameterCharts(dateStr) {
     const paramKey = block.getAttribute('data-key');
     loadParameterHistory(paramKey, dateStr);
   });
-  fillChartsMinDateInput(loadChartsMinDate());
+  // fillChartsMinDateInput(loadChartsMinDate()); // Убрано, чтобы не сбрасывать вручную введённую дату
 }
 
 // --- Управление отображением графиков ---
@@ -867,10 +867,11 @@ async function fillChartsMinDateInput(selectedDate) {
     } else if (selectedDate && data.dates.includes(selectedDate)) {
       input.value = selectedDate;
       saveChartsMinDate(selectedDate);
-    } else {
-      input.value = data.dates[0];
-      saveChartsMinDate(data.dates[0]);
-    }
+    } // Убрана автоматическая подстановка первой доступной даты
+    // else if (!input.value) {
+    //   input.value = data.dates[0];
+    //   saveChartsMinDate(data.dates[0]);
+    // }
   } catch {}
 }
 
