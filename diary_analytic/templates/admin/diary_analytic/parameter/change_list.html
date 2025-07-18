@@ -1,0 +1,8 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+  <li>
+    <a class="addlink" href="{% url 'admin:import_excel' %}">📥 Импорт из Excel</a>
+  </li>
+{% endblock %}

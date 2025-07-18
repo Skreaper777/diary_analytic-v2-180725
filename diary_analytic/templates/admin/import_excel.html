@@ -1,0 +1,22 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+  <h1>📥 Импорт параметров из Excel</h1>
+
+  <p>Загрузите Excel-файл с колонками <code>key</code> и <code>name</code>. Пример структуры:</p>
+  <pre>
+| key       | name         |
+|-----------|--------------|
+| toshn     | Тошнота      |
+| ustalost  | Усталость    |
+| trevoga   | Тревожность  |
+  </pre>
+
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="default">💾 Импортировать</button>
+    <a href="../" class="button">↩ Назад</a>
+  </form>
+{% endblock %}

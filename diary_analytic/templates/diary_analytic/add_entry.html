@@ -1,0 +1,166 @@
+{% load static %}
+{% load diary_filters %}
+{% load diary_tags %}
+{% load param_title_split %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Форма дневника состояния</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{% static 'css/add_entry.css' %}?v=250525-2">
+</head>
+<body>
+  <script id="values-map" type="application/json">
+    {{ values_map|json_script:"values-map" }}
+  </script>
+  <script>
+    const VALUES_MAP = JSON.parse(document.getElementById('values-map').textContent);
+    window.VALUES_MAP = VALUES_MAP;
+  </script>
+  <div class="container">
+    <h2>📘 Дневник состояния — {{ selected_date }}</h2>
+    <div class="date-selector" style="margin-bottom: 28px; margin-top: 0; display: flex; justify-content: flex-end;">
+      <input
+        id="date-input"
+        type="date"
+        lang="ru-RU"
+        value="{{ selected_date|date:'Y-m-d' }}"
+        onchange="window.location.href='?date='+encodeURIComponent(this.value)"
+      />
+    </div>
+    <button id="retrain-models-btn" type="button" style="width:100%;margin-bottom:35px;padding:12px;font-size:1.1em;background:#007bff;color:white;border:none;border-radius:10px;cursor:pointer;">🔁 Обновить прогнозы</button>
+
+    <!-- Параметры -->
+    <div class="sort-buttons-row">
+      <div class="sort-btns-left">
+        <button type="button" class="sort-btn" data-sort="name">Имя <span class="sort-arrow"></span></button>
+        <button type="button" class="sort-btn" data-sort="value">Значение <span class="sort-arrow"></span></button>
+        <button type="button" class="sort-btn" data-sort="sum">Сумма <span class="sort-arrow"></span></button>
+        <button type="button" class="sort-btn" data-sort="sum-percent">Проценты <span class="sort-arrow"></span></button>
+        <button type="button" class="sort-btn" data-sort="prediction">Прогноз <span class="sort-arrow"></span></button>
+        <button type="button" class="sort-btn" id="def-btn" style="background:#28a745;color:white;">def</button>
+      </div>
+
+    </div>
+
+    <div id="charts-date-range-block" class="charts-date-range-block">
+      <button type="button" class="charts-toggle-btn" id="focus-toggle-btn">Фокус</button>
+      <button type="button" class="charts-toggle-btn" id="comments-toggle-btn">Ком</button>
+      <button type="button" class="charts-toggle-btn" id="predictions-toggle-btn">Прог</button>
+      <button type="button" class="charts-toggle-btn" id="charts-toggle-btn" style="margin-left:0;">Граф</button>
+      <label for="charts-min-date" style="color:#bbb;font-size:0.98em; margin-left: 8px;">С&nbsp;даты:</label>
+      <input type="date" id="charts-min-date" lang="ru-RU" style="min-width: 220px; background:#222;color:#eee;border:1.5px solid #444;border-radius:8px;padding:7px 12px;font-size:1em;outline:none;" />
+    </div>
+
+    <div class="filter-row" style="margin-top: 35px; margin-bottom: 35px; display: flex; justify-content: flex-start; align-items: center; gap: 8px;">
+      <input id="param-filter-input" type="text" placeholder="Фильтр параметров..." autocomplete="off" />
+      <button type="button" class="filter-clear-btn" aria-label="Очистить фильтр" title="Очистить фильтр" style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; border: none; background: #eee; color: #888; font-size: 1.2em; cursor: pointer; margin-left: 4px;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="8" fill="#eee"/>
+          <path d="M5.5 5.5L10.5 10.5M10.5 5.5L5.5 10.5" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="parameters-list">
+    {% for param in parameters %}
+      <div class="parameter-block" data-key="{{ param.key }}" data-param="{{ param.key }}" style="position:relative;">
+        <div class="param-title" style="position:relative;">
+          {% for level, part in param.name|split_param_title %}
+            <div class="param-title-level-{{ level }}">{{ part }}</div>
+          {% endfor %}
+          <!-- Карандаш -->
+          <button class="edit-param-btn" title="Переименовать" style="position:absolute;top:0;right:0;background:none;border:none;cursor:pointer;padding:2px 4px;z-index:2;">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M14.7 2.29a1 1 0 0 1 1.42 0l1.59 1.59a1 1 0 0 1 0 1.42l-9.3 9.3-2.12.71.71-2.12 9.3-9.3zM3 17h14v2H3v-2z" fill="#888"/></svg>
+          </button>
+        </div>
+        <!-- Модальное окно для переименования -->
+        <div class="rename-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(30,32,38,0.55);z-index:1000;align-items:center;justify-content:center;">
+          <div style="background:#23272f;padding:28px 24px 20px 24px;border-radius:14px;min-width:320px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,0.22);position:relative;color:#eee;font-family:inherit;">
+            <h3 style="margin-top:0;margin-bottom:18px;font-size:1.15em;color:#fff;">Переименовать параметр</h3>
+            <label style="font-size:0.98em;color:#bbb;">Новое название:</label>
+            <input type="text" class="rename-param-name" style="width:100%;margin-bottom:18px;padding:9px 12px;font-size:1em;border-radius:8px;border:1.5px solid #444;background:#181a20;color:#eee;outline:none;" value="{{ param.name }}" />
+            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px;">
+              <button class="cancel-rename-btn" style="background:#007bff;color:white;padding:8px 22px;border:none;border-radius:8px;font-size:1em;box-shadow:0 2px 8px rgba(0,123,255,0.08);transition:background 0.2s;">Отменить</button>
+              <button class="save-rename-btn" style="background:#28a745;color:white;padding:8px 22px;border:none;border-radius:8px;font-size:1em;box-shadow:0 2px 8px rgba(40,167,69,0.08);transition:background 0.2s;">Сохранить</button>
+            </div>
+            <div class="rename-error" style="color:#ff6b6b;font-size:0.98em;margin-top:14px;display:none;"></div>
+          </div>
+        </div>
+        <!-- конец модального окна -->
+        <div class="param-sum-block-range" id="param-sum-range-{{ param.key }}" style="">–</div>
+        <div class="param-flex-row" style="display: flex; align-items: flex-start;">
+          <div class="rating-buttons">
+            {% for i in "012345"|make_list %}
+              <button class="value-button{% if values_map|get:param.key|stringformat:'g' == i %} selected{% endif %}" data-value="{{ i }}">{{ i }}</button>
+            {% endfor %}
+            <div class="param-sum-block" id="param-sum-{{ param.key }}"></div>
+          </div>
+          
+          
+          <div class="prediction-wrapper" style="margin-top: 0;">
+            <div class="prediction-block">
+              <div class="prediction-title">Прогноз</div>
+              <div class="predicted" id="predicted-{{ param.key }}">–</div>
+              <div class="predicted-secondary" id="predicted-delta-{{ param.key }}">Δ –</div>
+            </div>
+          </div>
+        </div>
+        <!-- Блок описания параметра -->
+        <div class="param-description-block" data-param-key="{{ param.key }}" style="margin:12px 32px 0 0;display:none;">
+          <label for="param-description-{{ param.key }}" style="font-size:0.98em;color:#888;"></label>
+          <textarea id="param-description-{{ param.key }}" class="param-description-textarea" rows="3" style="width:100%;resize:vertical;min-height:60px;max-height:200px;">{{ param.description|default_if_none:'' }}</textarea>
+          <button class="save-description-btn" data-param-key="{{ param.key }}" style="display:none;margin-top:6px;">💾 Сохранить</button>
+          <div class="save-description-status" style="font-size:0.95em;color:#28a745;margin-top:4px;display:none;">Сохранено!</div>
+        </div>
+        <div class="history-chart-block" style="display:none;">
+          <canvas id="history-chart-{{ param.key }}" height="90"></canvas>
+          <div class="history-chart-empty" id="history-chart-empty-{{ param.key }}" style="display:none;color:#888;text-align:center;font-size:0.95em;margin-top:4px;">Нет данных для графика</div>
+        </div>
+
+      </div>
+    {% endfor %}
+    </div>
+    <!-- Универсальный блок прогнозов по всем моделям 
+    {% if predictions_by_model %}
+      {% for model_name, model_predictions in predictions_by_model.items %}
+        <div class="prediction-block model-{{ model_name }}">
+          <h3>Прогнозы по модели <strong>{{ model_name }}</strong></h3>
+          <ul>
+            {% for param, value in model_predictions.items %}
+              <li><strong>{{ param }}</strong>: {{ value|floatformat:2 }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    {% endif %}-->
+
+    <!-- Комментарий (в самом низу) -->
+    <form method="post" style="margin-top: 40px;">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">💾 Сохранить комментарий</button>
+    </form>
+  </div>
+
+  <script src="{% static 'js/diary.js' %}?v=230523-3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <script src="{% static 'js/rename_param.js' %}?v=1.0.0"></script>
+  <script src="{% static 'js/param_comment.js' %}?v=1.0.0"></script>
+  <script>
+    // JS для показа/скрытия комментариев
+    document.addEventListener('DOMContentLoaded', function() {
+      // Кнопка "Комментарии"
+      const commentsBtn = document.getElementById('comments-toggle-btn');
+      commentsBtn.addEventListener('click', function() {
+        const isActive = commentsBtn.classList.toggle('active');
+        document.querySelectorAll('.param-description-block').forEach(block => {
+          block.style.display = isActive ? 'block' : 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
