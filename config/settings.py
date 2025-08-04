@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-toikptb1%th0)*@^@+-na6-ci35el^dg1dgayzg86f5n^n5u%h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['150.241.74.139', 'peppy-toad.aeza.network', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['150.241.74.139', 'peppy-toad.aeza.network', 'localhost', '127.0.0.1', '195.62.49.15']
 
 # Application definition
 
